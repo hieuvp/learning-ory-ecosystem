@@ -1,7 +1,7 @@
 kratos:
   config:
     # Mandatory values
-    dsn: postgres://foo:bar@pg-sqlproxy-gcloud-sqlproxy:5432/db
+    dsn: postgres://ory:p4ssw0rd@pg-sqlproxy-gcloud-sqlproxy:5432/db
     secrets:
       session:
         - dolore occaecat nostrud Ut

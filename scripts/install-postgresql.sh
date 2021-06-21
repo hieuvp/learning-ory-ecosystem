@@ -8,7 +8,6 @@ set -eoux pipefail
 # minikube start --driver=virtualbox
 
 cd postgresql
-helm dependency update
 
 helm upgrade --install \
   --namespace=ory --create-namespace \
