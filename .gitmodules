@@ -1,0 +1,3 @@
+[submodule "quickstart/kratos"]
+	path = quickstart/kratos
+	url = https://github.com/ory/kratos.git
