@@ -1,2 +1,1 @@
-# learning-ory-ecosystem
-Learning ORY Ecosystem
+# Learning ORY Ecosystem
