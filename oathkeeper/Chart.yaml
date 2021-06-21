@@ -1,0 +1,29 @@
+apiVersion: v2
+appVersion: v0.38.9-beta.1
+dependencies:
+- alias: oathkeeper-maester
+  condition: maester.enabled
+  name: oathkeeper-maester
+  repository: file://../oathkeeper-maester
+  version: 0.14.1
+description: A Helm chart for deploying ORY Oathkeeper in Kubernetes
+home: https://www.ory.sh/
+keywords:
+- zero-trust
+- beyond-corp
+- access-control
+- reverse-proxy
+- nginx
+- envoy
+- ambassador
+- auth-filter
+maintainers:
+- email: office@ory.sh
+  name: ORY Team
+  url: https://www.ory.sh/
+name: oathkeeper
+sources:
+- https://github.com/ory/oathkeeper
+- https://github.com/ory/k8s
+type: application
+version: 0.14.1
