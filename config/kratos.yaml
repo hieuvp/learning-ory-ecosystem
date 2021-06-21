@@ -1,0 +1,12 @@
+kratos:
+  config:
+    # Mandatory values
+    dsn: postgres://foo:bar@pg-sqlproxy-gcloud-sqlproxy:5432/db
+    secrets:
+      session:
+        - dolore occaecat nostrud Ut
+        - sit et commodoaute ut voluptate consectetur Duis
+
+    # Optional values
+    log:
+      level: trace
