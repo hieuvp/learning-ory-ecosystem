@@ -1,0 +1,5 @@
+oathkeeper:
+  config:
+    authenticators:
+      noop:
+        enabled: true
