@@ -2,9 +2,7 @@
 
 ![ORY Ecosystem](https://www.ory.sh/docs/img/docs/ory-ecosystem.png)
 
-<br />
-
-[Projects](https://www.ory.sh/docs/ecosystem/projects/)
+## [Projects](https://www.ory.sh/docs/ecosystem/projects/)
 
 1. Ory Kratos is an identity management server.
 1. Ory Hydra is an OAuth 2.0 and OpenID Connect provider.
