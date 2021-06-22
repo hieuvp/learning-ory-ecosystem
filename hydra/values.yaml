@@ -1,0 +1,267 @@
+# Number of ORY Hydra members
+replicaCount: 1
+
+image:
+  # ORY Hydra image
+  repository: oryd/hydra
+  # ORY Hydra version
+  tag: v1.8.5
+  # Image pull policy
+  pullPolicy: IfNotPresent
+
+# Image pull secrets
+imagePullSecrets: []
+# Chart name override
+nameOverride: ""
+# Full chart name override
+fullnameOverride: ""
+
+## Pod priority
+## https://kubernetes.io/docs/concepts/configuration/pod-priority-preemption/
+# priorityClassName: ""
+
+# Configures the Kubernetes service
+service:
+  # Configures the Kubernetes service for the proxy port.
+  public:
+    # En-/disable the service
+    enabled: true
+    # The service type
+    type: ClusterIP
+    # The service port
+    port: 4444
+    # If you do want to specify annotations, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    labels: {}
+    #      If you do want to specify additional labels, uncomment the following
+    #      lines, adjust them as necessary, and remove the curly braces after 'labels:'.
+    #      e.g.  app: hydra
+  # Configures the Kubernetes service for the api port.
+  admin:
+    # En-/disable the service
+    enabled: true
+    # The service type
+    type: ClusterIP
+    # The service port
+    port: 4445
+    # If you do want to specify annotations, uncomment the following
+    # lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+    annotations: {}
+    # kubernetes.io/ingress.class: nginx
+    # kubernetes.io/tls-acme: "true"
+    labels: {}
+    #      If you do want to specify additional labels, uncomment the following
+    #      lines, adjust them as necessary, and remove the curly braces after 'labels:'.
+    #      e.g.  app: hydra
+
+# Configure ingress
+ingress:
+  # Configure ingress for the proxy port.
+  public:
+    # En-/Disable the proxy ingress.
+    enabled: false
+    annotations: {}
+    #     kubernetes.io/ingress.class: nginx
+    #     kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: public.hydra.localhost
+        paths: ["/"]
+  #    tls: []
+  #        hosts:
+  #          - proxy.hydra.local
+  #      - secretName: hydra-proxy-example-tls
+
+  admin:
+    # En-/Disable the api ingress.
+    enabled: false
+
+    annotations: {}
+    #      If you do want to specify annotations, uncomment the following
+    #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+    #      kubernetes.io/ingress.class: nginx
+    #      kubernetes.io/tls-acme: "true"
+    hosts:
+      - host: admin.hydra.localhost
+        paths: ["/"]
+#    tls: []
+#      hosts:
+#        - api.hydra.local
+#      - secretName: hydra-api-example-tls
+
+# Configure ORY Hydra itself
+hydra:
+  # The ORY Hydra configuration. For a full list of available settings, check:
+  #   https://github.com/ory/hydra/blob/master/docs/config.yaml
+  config:
+    serve:
+      public:
+        port: 4444
+      admin:
+        port: 4445
+      tls:
+        allow_termination_from:
+          - 10.0.0.0/8
+          - 172.16.0.0/12
+          - 192.168.0.0/16
+    secrets: {}
+    secretAnnotations:
+    # Create the secret before installation, and only then. This saves the secret from regenerating during an upgrade
+      helm.sh/hook: "pre-install"
+      helm.sh/hook-delete-policy: "before-hook-creation"
+    # Use a pre-existing secret (see secret.yaml for required fields)
+    # existingSecret: my-preexisting-secret
+    urls:
+      self: {}
+
+  autoMigrate: false
+  dangerousForceHttp: false
+  dangerousAllowInsecureRedirectUrls: false
+
+deployment:
+  resources: {}
+  #  We usually recommend not to specify default resources and to leave this as a conscious
+  #  choice for the user. This also increases chances charts run on environments with little
+  #  resources, such as Minikube. If you do want to specify resources, uncomment the following
+  #  lines, adjust them as necessary, and remove the curly braces after 'resources:'.
+  #  limits:
+  #    cpu: 100m
+  #    memory: 128Mi
+  #  requests:
+  #    cpu: 100m
+  #  memory: 128Mi
+
+  securityContext: 
+    capabilities:
+      drop:
+      - ALL
+    readOnlyRootFilesystem: true
+    runAsNonRoot: true
+    runAsUser: 100
+    allowPrivilegeEscalation: false
+    privileged: false
+
+  lifecycle: {}
+
+  labels: {}
+  #      If you do want to specify additional labels, uncomment the following
+  #      lines, adjust them as necessary, and remove the curly braces after 'labels:'.
+  #      e.g.  type: app
+
+  annotations: {}
+  #      If you do want to specify annotations, uncomment the following
+  #      lines, adjust them as necessary, and remove the curly braces after 'annotations:'.
+  #      e.g.  sidecar.istio.io/rewriteAppHTTPProbers: "true"
+
+  # Node labels for pod assignment.
+  nodeSelector: {}
+  # If you do want to specify node labels, uncomment the following
+  # lines, adjust them as necessary, and remove the curly braces after 'nodeSelector:'.
+  #   foo: bar
+
+  # If you want to use Jaeger with agents being deployed in a daemonset, you can 
+  # use the following ENV vars to configure the right endpoints using the IP 
+  # address of the node the pod has been deployed to. 
+  #
+  # extraEnv:
+  #   - name: JAEGER_AGENT_HOST
+  #     valueFrom:
+  #       fieldRef:
+  #         fieldPath: status.hostIP 
+  #   - name: TRACING_PROVIDERS_JAEGER_LOCAL_AGENT_ADDRESS
+  #     value: $(JAEGER_AGENT_HOST):6831
+  #   - name: TRACING_PROVIDERS_JAEGER_SAMPLING_SERVER_URL
+  #     value: http://$(JAEGER_AGENT_HOST):5778
+  extraEnv: []
+
+  # Configuration for tracing providers. Only datadog is currently supported through this block.
+  # If you need to use a different tracing provider, please manually set the configuration values
+  # via "hydra.config" or via "deployment.extraEnv".
+  tracing:
+    datadog:
+      enabled: false
+
+      # Sets the datadog DD_ENV environment variable. This value indicates the environment where hydra is running.
+      # Default value: "none".
+      # env: production
+
+      # Sets the datadog DD_VERSION environment variable. This value indicates the version that hydra is running.
+      # Default value: .Values.image.tag (i.e. the tag used for the docker image).
+      # version: X.Y.Z
+
+      # Sets the datadog DD_SERVICE environment variable. This value indicates the name of the service running.
+      # Default value: "ory/hydra".
+      # service: ory/hydra
+
+      # Sets the datadog DD_AGENT_HOST environment variable. This value indicates the host address of the datadog agent.
+      # If set to true, this configuration will automatically set DD_AGENT_HOST to the field "status.hostIP" of the pod.
+      # Default value: false.
+      # useHostIP: true
+
+  # Configure node tolerations.
+  tolerations: []
+
+  ## Specify the serviceAccountName value.
+  ## In some situations it is needed to provides specific permissions to Hydra deployments
+  ## Like for example installing Hydra on a cluster with a PosSecurityPolicy and Istio.
+  ## Uncoment if it is needed to provide a ServiceAccount for the Hydra deployment.
+  # serviceAccountName:
+
+  extraVolumes: []
+  extraVolumeMounts: []
+  # If you want to mount external volume
+  # For example, mount a secret containing Certificate root CA to verify database
+  # TLS connection.
+  # extraVolumes:
+  #   - name: postgresql-tls
+  #     secret:
+  #       secretName: postgresql-root-ca
+  # extraVolumeMounts:
+  #   - name: postgresql-tls
+  #     mountPath: "/etc/postgresql-tls"
+  #     readOnly: true
+
+  # Configure HPA
+  autoscaling:
+    enabled: false
+  # minReplicas: 1
+  # maxReplicas: 3
+  # targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
+
+  # Configure the probes for when the deployment is considered ready and ongoing health check
+  livenessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 5
+  readinessProbe:
+    initialDelaySeconds: 30
+    periodSeconds: 10
+    failureThreshold: 5
+
+  # https://github.com/kubernetes/kubernetes/issues/57601
+  automountServiceAccountToken: false
+
+job:
+  annotations: {}
+
+# Configure node affinity
+affinity: {}
+
+
+# Configures controller setup
+maester:
+  enabled: true
+
+# Values for the hydra admin service arguments to hydra-maester
+hydra-maester:
+  adminService: {}
+    # The service name value may need to be set if you use
+    # `fullnameOverride` for the parent chart
+    # name:
+
+    # You only need to set this port if you change the value for
+    # `service.admin.port` in the parent chart
+    # port:
