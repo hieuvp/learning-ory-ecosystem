@@ -5,5 +5,6 @@ set -eoux pipefail
 cd quickstart/hydra
 
 docker-compose \
-  --file=quickstart.yml --file=quickstart-postgres.yml up \
+  --file=quickstart.yml \
+  --file=quickstart-postgres.yml up \
   --build --force-recreate
